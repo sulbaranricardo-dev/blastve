@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda | BlastVE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --blast-orange: #FFA503; }
+        body { background-color: #0a0a0a; color: white; font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .text-orange-blast { color: var(--blast-orange); }
+        .bg-orange-blast { background-color: var(--blast-orange); }
+        
+        /* Estilo para el botón de categoría activo */
+        .filter-btn.active { background-color: var(--blast-orange); color: black; }
+    </style>
+</head>
+<body class="pt-24">
+
+    <nav class="fixed top-4 left-1/2 -translate-x-1/2 w-[92%] md:w-[85%] glass rounded-2xl z-50 px-6 py-3">
+        <div class="flex justify-between items-center">
+            <a href="index.html">
+                <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/Blast%2FCalaveraBlanca(2).png?alt=media&token=89f5df51-fd80-4c68-8e2b-0dabb088a1a5" 
+                     alt="Isotipo" class="w-10 h-10 object-contain">
+            </a>
+            <div class="space-x-8 hidden md:flex font-bold uppercase text-[10px] tracking-[0.2em]">
+                <a href="index.html" class="hover:text-orange-blast transition">Inicio</a>
+                <a href="#" class="text-orange-blast">Tienda</a>
+                <a href="#contacto" class="hover:text-orange-blast transition">Contacto</a>
+            </div>
+            <div class="relative cursor-pointer" onclick="toggleCart()">
+                <i class="fas fa-shopping-bag text-xl"></i>
+                <span id="cart-count" class="absolute -top-2 -right-2 bg-orange-blast text-black text-[9px] font-black rounded-full h-4 w-4 flex items-center justify-center">0</span>
+            </div>
+        </div>
+    </nav>
+
+    <header class="container mx-auto px-6 py-12 text-center">
+        <h1 class="text-5xl font-black uppercase tracking-tighter mb-4">Catálogo <span class="text-orange-blast">Completo</span></h1>
+        <p class="text-gray-400 text-sm tracking-widest uppercase">Todo lo que necesitas para tu entrenamiento</p>
+    </header>
+
+    <section class="container mx-auto px-6 mb-12 flex flex-wrap justify-center gap-4" id="category-filters">
+        <button class="filter-btn active glass px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition" onclick="filterProducts('todos')">Todos</button>
+        </section>
+
+    <main class="container mx-auto px-6 pb-24">
+        <div id="tienda-grid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            <p class="text-center col-span-full text-gray-500 animate-pulse">Cargando inventario...</p>
+        </div>
+    </main>
+
+    <div id="cart-modal" class="fixed inset-0 z-[60] hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="toggleCart()"></div>
+        <div class="absolute right-0 top-0 h-full w-full md:w-[400px] glass p-8 overflow-y-auto">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl font-black uppercase">Tu Carrito</h2>
+                <button onclick="toggleCart()" class="text-white text-2xl">&times;</button>
+            </div>
+            <div id="cart-items" class="space-y-6">
+                </div>
+            <div class="mt-8 border-t border-white/10 pt-6">
+                <div class="flex justify-between text-xl font-black mb-6">
+                    <span>TOTAL:</span>
+                    <span class="text-orange-blast" id="cart-total">$0.00</span>
+                </div>
+                <button class="w-full bg-orange-blast text-black py-4 rounded-xl font-black uppercase tracking-widest hover:scale-105 transition">
+                    Confirmar Pedido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbzosCdNdzT7nkWH6Ofemxk9yf1UnO3kbo6E9Unpdn7NIi3I2akLsx0eAaW1sgScvpugCQ/exec";
+        let allProducts = [];
+        let cart = JSON.parse(localStorage.getItem('blastCart')) || [];
+
+        async function cargarTienda() {
+            try {
+                const response = await fetch(API_URL);
+                allProducts = await response.json();
+                renderFilters();
+                renderProducts(allProducts);
+                updateCartUI();
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+
+        function renderFilters() {
+            const categories = ['todos', ...new Set(allProducts.map(p => p.categoria.toLowerCase()))];
+            const filterContainer = document.getElementById('category-filters');
+            filterContainer.innerHTML = categories.map(cat => `
+                <button class="filter-btn glass px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition" 
+                        onclick="filterProducts('${cat}', this)">${cat}</button>
+            `).join('');
+        }
+
+        function renderProducts(products) {
+            const grid = document.getElementById('tienda-grid');
+            grid.innerHTML = products.map(p => `
+                <div class="glass relative rounded-3xl overflow-hidden p-4 group">
+                    <div class="aspect-square rounded-2xl overflow-hidden mb-4">
+                        <img src="${p.imagen_url}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                    </div>
+                    <h4 class="font-bold text-sm uppercase mb-1">${p.nombre}</h4>
+                    <p class="text-orange-blast font-black text-lg mb-4">$${parseFloat(p.precio).toFixed(2)}</p>
+                    <button onclick="addToCart('${p.id}')" class="w-full bg-white/5 border border-white/10 hover:bg-orange-blast hover:text-black py-2 rounded-xl transition font-bold text-xs uppercase">
+                        Agregar
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function filterProducts(cat, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('bg-orange-blast', 'text-black'));
+            if(btn) btn.classList.add('bg-orange-blast', 'text-black');
+            
+            const filtered = cat === 'todos' ? allProducts : allProducts.filter(p => p.categoria.toLowerCase() === cat);
+            renderProducts(filtered);
+        }
+
+        // LÓGICA DEL CARRITO
+        function addToCart(id) {
+            const product = allProducts.find(p => p.id == id);
+            const inCart = cart.find(item => item.id == id);
+            
+            if (inCart) {
+                inCart.quantity++;
+            } else {
+                cart.push({...product, quantity: 1});
+            }
+            saveCart();
+        }
+
+        function saveCart() {
+            localStorage.setItem('blastCart', JSON.stringify(cart));
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const count = cart.reduce((acc, item) => acc + item.quantity, 0);
+            document.getElementById('cart-count').innerText = count;
+            
+            const cartItems = document.getElementById('cart-items');
+            const totalEl = document.getElementById('cart-total');
+            
+            let total = 0;
+            cartItems.innerHTML = cart.map(item => {
+                total += item.precio * item.quantity;
+                return `
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="font-bold text-sm uppercase">${item.nombre}</p>
+                            <p class="text-xs text-gray-500">${item.quantity} x $${item.precio}</p>
+                        </div>
+                        <button onclick="removeFromCart('${item.id}')" class="text-red-500 text-xs">Quitar</button>
+                    </div>
+                `;
+            }).join('');
+            totalEl.innerText = `$${total.toFixed(2)}`;
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id != id);
+            saveCart();
+        }
+
+        function toggleCart() {
+            document.getElementById('cart-modal').classList.toggle('hidden');
+        }
+
+        window.onload = cargarTienda;
+    </script>
+</body>
+</html>
