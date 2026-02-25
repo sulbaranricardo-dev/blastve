@@ -26,6 +26,8 @@
             border-radius: 0.75rem; padding: 0.75rem; font-size: 0.875rem; color: white; transition: all 0.3s;
         }
         .input-blast:focus { outline: none; border-color: var(--blast-orange); background: rgba(255,255,255,0.08); }
+        
+        .swal2-popup { border-radius: 2rem !important; background: #121212 !important; color: white !important; border: 1px solid rgba(255,165,3,0.2) !important; }
     </style>
 </head>
 <body class="pt-24">
@@ -36,7 +38,7 @@
             <div class="space-x-8 hidden md:flex font-bold uppercase text-[10px] tracking-[0.2em]">
                 <a href="index.html" class="hover:text-orange-blast transition">Inicio</a>
                 <a href="#" class="text-orange-blast">Tienda</a>
-                <a href="#user-section" class="hover:text-orange-blast transition">Mis Pedidos</a>
+                <a href="mi-pedido.html" class="hover:text-orange-blast transition">Mis Pedidos</a>
             </div>
             <div class="relative cursor-pointer" onclick="toggleCart()"><i class="fas fa-shopping-bag text-xl"></i><span id="cart-count" class="absolute -top-2 -right-2 bg-orange-blast text-black text-[9px] font-black rounded-full h-4 w-4 flex items-center justify-center">0</span></div>
         </div>
@@ -44,41 +46,18 @@
 
     <header class="container mx-auto px-6 py-12 text-center">
         <h1 class="text-5xl font-black uppercase tracking-tighter mb-4">Catálogo <span class="text-orange-blast">Completo</span></h1>
-        <p class="text-gray-400 text-sm tracking-widest uppercase italic">The Hardest Workers in the Room</p>
+        <p class="text-gray-400 text-sm tracking-widest uppercase italic font-bold">The Hardest Workers in the Room</p>
     </header>
 
     <section class="container mx-auto px-6 mb-12 flex flex-wrap justify-center gap-4" id="category-filters">
         <button class="filter-btn active glass px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition" onclick="filterProducts('todos', this)">Todos</button>
     </section>
 
-    <main class="container mx-auto px-6 pb-24 border-b border-white/5">
+    <main class="container mx-auto px-6 pb-24">
         <div id="tienda-grid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
             <p class="text-center col-span-full text-gray-500 animate-pulse uppercase font-bold tracking-widest">Cargando Arsenal...</p>
         </div>
     </main>
-
-    <section id="user-section" class="container mx-auto px-6 py-24">
-        <div class="max-w-4xl mx-auto">
-            <div id="login-box" class="glass p-10 rounded-3xl text-center">
-                <i class="fas fa-user-shield text-5xl text-orange-blast mb-4"></i>
-                <h2 class="text-3xl font-black uppercase mb-2">Estatus de <span class="text-orange-blast">Pedido</span></h2>
-                <p class="text-gray-400 text-[10px] mb-8 uppercase tracking-[0.2em]">Ingresa con tu Correo y Cédula</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg mx-auto">
-                    <input type="email" id="login-email" placeholder="Correo Electrónico" class="input-blast">
-                    <input type="text" id="login-cedula" placeholder="Cédula (Clave)" class="input-blast">
-                    <button onclick="consultarPedidos()" class="md:col-span-2 bg-orange-blast text-black font-black py-4 rounded-xl uppercase tracking-widest hover:brightness-110 transition shadow-lg shadow-orange-500/20">Consultar Mis Ventas</button>
-                </div>
-            </div>
-
-            <div id="user-history" class="hidden space-y-8 animate-fade-in">
-                <div class="flex justify-between items-end">
-                    <h3 class="text-2xl font-black uppercase tracking-tighter">Historial de <span class="text-orange-blast">Compras</span></h3>
-                    <button onclick="location.reload()" class="text-[10px] font-bold text-red-500 uppercase tracking-widest border border-red-500/30 px-4 py-2 rounded-full">Cerrar Sesión</button>
-                </div>
-                <div id="pedidos-list" class="grid grid-cols-1 gap-4"></div>
-            </div>
-        </div>
-    </section>
 
     <div id="cart-modal" class="fixed inset-0 z-[60] hidden">
         <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="toggleCart()"></div>
@@ -101,7 +80,7 @@
             <div class="glass w-full max-w-5xl rounded-3xl overflow-hidden flex flex-col md:flex-row max-h-[95vh] border border-white/10 shadow-2xl">
                 
                 <div class="w-full md:w-5/12 bg-white/5 p-6 md:p-10 border-b md:border-b-0 md:border-r border-white/10 overflow-y-auto">
-                    <h2 class="text-2xl font-black uppercase mb-6 tracking-tighter">Resumen del <span class="text-orange-blast">Pedido</span></h2>
+                    <h2 class="text-2xl font-black uppercase mb-6 tracking-tighter">Tu <span class="text-orange-blast">Pedido</span></h2>
                     <div id="checkout-items" class="space-y-4 mb-8"></div>
                     <div class="border-t border-white/10 pt-4 space-y-2">
                         <div class="flex justify-between text-[10px] text-gray-400 font-bold uppercase"><span>Envío (MRW):</span><span class="text-orange-blast">Cobro en destino</span></div>
@@ -120,14 +99,14 @@
                                 <input type="tel" id="cli-whatsapp" placeholder="WhatsApp" required class="input-blast">
                                 <input type="email" id="cli-correo" placeholder="Correo Electrónico" required class="input-blast">
                             </div>
-                            <p class="text-[9px] text-gray-500 italic mt-2">* Se creará un usuario automático con su Correo (Usuario) y Cédula (Clave) para mirar su historial y estatus.</p>
+                            <p class="text-[9px] text-gray-500 italic mt-1">* Su usuario será su Correo y su clave su Cédula para rastrear el pedido en "Mis Pedidos".</p>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <input type="text" id="cli-estado" placeholder="Estado (Ej: Monagas)" required class="input-blast">
                                 <input type="text" id="cli-ciudad" placeholder="Ciudad" required class="input-blast">
                             </div>
                             <div class="space-y-1">
                                 <input type="text" id="cli-mrw" placeholder="Dirección de Oficina MRW" required class="input-blast">
-                                <p class="text-[9px] text-orange-blast/80 font-bold uppercase tracking-tighter">⚠️ Colocar dirección de su oficina MRW más cercana (No colocar dirección domicilio).</p>
+                                <p class="text-[9px] text-orange-blast font-bold uppercase tracking-tighter">⚠️ Solo oficinas MRW (No domicilio).</p>
                             </div>
                         </div>
 
@@ -144,42 +123,32 @@
                                 <input type="number" id="pago-monto" step="0.01" placeholder="Monto Pagado $" required class="input-blast">
                             </div>
                             <div class="space-y-2">
-                                <label class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Comprobante (Screenshot)</label>
+                                <label class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Captura de Pago</label>
                                 <input type="file" id="pago-img" accept="image/*" required class="block w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-orange-blast file:text-black file:font-black file:uppercase cursor-pointer">
                             </div>
                         </div>
 
-                        <button type="submit" id="btn-enviar" class="w-full bg-orange-blast text-black py-4 rounded-xl font-black uppercase tracking-widest hover:scale-[1.02] transition shadow-xl">Finalizar Compra</button>
+                        <button type="submit" id="btn-enviar" class="w-full bg-orange-blast text-black py-4 rounded-xl font-black uppercase tracking-widest hover:brightness-110 transition shadow-xl">Confirmar y Finalizar</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <footer id="contacto" class="bg-black py-16 px-6 text-center border-t border-white/5 mt-20">
-        <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/Blast%2FCalaveraBlanca(2).png?alt=media&token=89f5df51-fd80-4c68-8e2b-0dabb088a1a5" alt="Icon" class="w-12 h-12 mx-auto mb-6 opacity-30">
-        <p class="text-gray-600 text-[10px] font-bold tracking-[0.3em] uppercase">© 2026 BlastVE. Powering the athlete.</p>
+    <footer class="bg-black py-12 px-6 text-center border-t border-white/5 mt-10">
+        <p class="text-gray-600 text-[10px] font-bold tracking-[0.3em] uppercase">© 2026 BlastVE. Powered by discipline.</p>
     </footer>
 
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbzosCdNdzT7nkWH6Ofemxk9yf1UnO3kbo6E9Unpdn7NIi3I2akLsx0eAaW1sgScvpugCQ/exec";
         const DATOS_PAGO = {
             'pago-movil': "PAGO MÓVIL: BANCO BANESCO | RIF: V-26555888 | TEL: 0412-1234567",
-            'transferencia': "TRANSFERENCIA: BANCO BANESCO | CTA: 0134... | BLASTVE CORP",
-            'binance': "BINANCE PAY ID: 99887766 | RED: USDT BEP20",
-            'paypal': "PAYPAL: pagos@blastve.com (+6%)"
+            'transferencia': "TRANSFERENCIA: BANESCO | CTA: 0134-0000-00-0000000000 | BLASTVE",
+            'binance': "BINANCE PAY ID: 99887766 | USDT BEP20",
         };
 
         let allProducts = [];
         let cart = JSON.parse(localStorage.getItem('blastCart')) || [];
-
-        // Notificación profesional con SweetAlert2
-        const Notify = (title, icon) => {
-            Swal.fire({
-                title: title, icon: icon, background: '#1a1a1a', color: '#fff',
-                confirmButtonColor: '#FFA503', customClass: { popup: 'rounded-3xl border border-white/10' }
-            });
-        };
 
         async function cargarTienda() {
             try {
@@ -217,8 +186,7 @@
             const inCart = cart.find(i => i.id == id);
             if (inCart) inCart.quantity++; else cart.push({...p, quantity: 1});
             saveCart();
-            const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1500, timerProgressBar: true, background: '#1a1a1a', color: '#fff' });
-            Toast.fire({ icon: 'success', title: 'Añadido al arsenal' });
+            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Añadido', showConfirmButton: false, timer: 1000, background: '#1a1a1a', color: '#fff' });
         }
 
         function saveCart() { localStorage.setItem('blastCart', JSON.stringify(cart)); updateCartUI(); }
@@ -240,7 +208,7 @@
         function toggleCart() { document.getElementById('cart-modal').classList.toggle('hidden'); }
 
         function togglePaymentModal() {
-            if(cart.length === 0) return Notify("El carrito está vacío", "warning");
+            if(cart.length === 0) return Swal.fire({ text: 'Tu carrito está vacío', icon: 'warning', background: '#121212', color: '#fff' });
             document.getElementById('cart-modal').classList.add('hidden');
             document.getElementById('payment-modal').classList.toggle('hidden');
             let total = 0;
@@ -260,7 +228,7 @@
         async function enviarPedido(event) {
             event.preventDefault();
             const btn = document.getElementById('btn-enviar');
-            btn.innerHTML = '<i class="fas fa-circle-notch animate-spin"></i> PROCESANDO...'; btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-circle-notch animate-spin"></i> ENVIANDO...'; btn.disabled = true;
 
             const base64 = await toBase64(document.getElementById('pago-img').files[0]);
             const pedido = {
@@ -281,43 +249,29 @@
 
             try {
                 await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(pedido) });
-                Notify("¡BRUTAL! Pedido enviado. Revisa tu estatus con tu Cédula.", "success");
-                localStorage.removeItem('blastCart'); setTimeout(() => location.reload(), 3000);
-            } catch (e) { Notify("Error al enviar", "error"); btn.disabled = false; btn.innerText = "Finalizar Compra"; }
-        }
+                
+                let timerInterval;
+                Swal.fire({
+                    title: '¡PEDIDO BRUTAL!',
+                    html: 'Confirmado con éxito. Redirigiendo a tu historial en <b></b> milisegundos.',
+                    timer: 4000,
+                    icon: 'success',
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                        const b = Swal.getHtmlContainer().querySelector('b');
+                        timerInterval = setInterval(() => { b.textContent = Swal.getTimerLeft() }, 100);
+                    },
+                    willClose: () => { clearInterval(timerInterval) }
+                }).then(() => {
+                    localStorage.removeItem('blastCart');
+                    window.location.href = "mi-pedido.html";
+                });
 
-        async function consultarPedidos() {
-            const email = document.getElementById('login-email').value;
-            const ced = document.getElementById('login-cedula').value;
-            if(!email || !ced) return Notify("Completa los datos", "warning");
-
-            Swal.fire({ title: 'Consultando...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-
-            try {
-                const res = await fetch(`${API_URL}?action=getPedidos&email=${email}&cedula=${ced}`);
-                const data = await res.json();
-                Swal.close();
-
-                if(data.length === 0) return Notify("No hay pedidos registrados", "info");
-
-                document.getElementById('login-box').classList.add('hidden');
-                document.getElementById('user-history').classList.remove('hidden');
-                document.getElementById('pedidos-list').innerHTML = data.map(p => `
-                    <div class="glass p-6 rounded-3xl border-l-4 ${p.estatus === 'Pendiente' ? 'border-yellow-500' : 'border-green-500'} relative">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Ref: ${p.referencia}</p>
-                                <p class="text-[10px] text-white font-black">${p.fecha}</p>
-                            </div>
-                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase ${p.estatus === 'Pendiente' ? 'bg-yellow-500/10 text-yellow-500' : 'bg-green-500/10 text-green-500'}">${p.estatus}</span>
-                        </div>
-                        <p class="text-[10px] text-gray-400 mb-4 uppercase">${p.items}</p>
-                        <div class="flex justify-between items-center pt-4 border-t border-white/5">
-                            <span class="text-xl font-black text-orange-blast">$${parseFloat(p.total).toFixed(2)}</span>
-                            <a href="${p.comprobante}" target="_blank" class="text-[9px] font-bold text-blue-400 uppercase">Ver Comprobante</a>
-                        </div>
-                    </div>`).join('');
-            } catch (e) { Notify("Error de conexión", "error"); }
+            } catch (e) { 
+                Swal.fire({ title: 'Error', text: 'No pudimos conectar con el servidor', icon: 'error' });
+                btn.disabled = false; btn.innerText = "Confirmar y Finalizar"; 
+            }
         }
 
         const toBase64 = file => new Promise((resolve, reject) => {
