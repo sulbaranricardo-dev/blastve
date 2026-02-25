@@ -52,18 +52,23 @@
 <body>
 
     <nav class="fixed top-4 left-1/2 -translate-x-1/2 w-[92%] md:w-[85%] glass rounded-2xl z-50 px-6 py-3">
-        <div class="flex justify-between items-center">
-            <a href="index.html">
-                <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/Blast%2FCalaveraBlanca(2).png?alt=media&token=89f5df51-fd80-4c68-8e2b-0dabb088a1a5" 
-                     alt="Isotipo BlastVE" class="w-10 h-10 object-contain">
+    <div class="flex justify-between items-center">
+        <a href="index.html">
+            <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/Blast%2FCalaveraBlanca(2).png?alt=media&token=89f5df51-fd80-4c68-8e2b-0dabb088a1a5" 
+                 alt="Isotipo BlastVE" class="w-10 h-10 object-contain">
+        </a>
+        
+        <div class="space-x-8 hidden md:flex font-bold uppercase text-[10px] tracking-[0.2em]">
+            <a href="index.html" class="text-orange-blast">Inicio</a>
+            <a href="tienda.html" class="hover:text-orange-blast transition">Tienda</a>
+            <a href="#contacto" class="hover:text-orange-blast transition">Contacto</a>
+        </div>
+
+        <div class="flex items-center space-x-5">
+            <a href="mi-pedido.html" class="hover:text-orange-blast transition">
+                <i class="fas fa-user-circle text-xl"></i>
             </a>
             
-            <div class="space-x-8 hidden md:flex font-bold uppercase text-[10px] tracking-[0.2em]">
-                <a href="index.html" class="text-orange-blast">Inicio</a>
-                <a href="tienda.html" class="hover:text-orange-blast transition">Tienda</a>
-                <a href="mi-pedido.html" class="hover:text-orange-blast transition">Mis Pedidos</a>
-            </div>
-
             <div class="relative cursor-pointer group">
                 <a href="tienda.html">
                     <i class="fas fa-shopping-bag text-xl group-hover:text-orange-blast transition"></i>
@@ -71,7 +76,8 @@
                 </a>
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
 
     <section class="min-h-screen flex items-center justify-center relative hero-gym">
         <div class="relative text-center z-10 px-6">
