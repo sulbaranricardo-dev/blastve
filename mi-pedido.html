@@ -16,6 +16,12 @@
         .bg-orange-blast { background-color: var(--blast-orange); }
         .input-blast { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.75rem; padding: 0.75rem; font-size: 0.875rem; color: white; transition: all 0.3s; }
         .input-blast:focus { outline: none; border-color: var(--blast-orange); }
+        
+        /* Línea de Progreso */
+        .step-line { position: absolute; top: 12px; left: 0; height: 2px; background: rgba(255,255,255,0.1); width: 100%; z-index: 1; }
+        .step-progress { position: absolute; top: 12px; left: 0; height: 2px; background: var(--blast-orange); transition: width 0.5s; z-index: 2; }
+        .step-dot { width: 24px; height: 24px; border-radius: 50%; background: #1a1a1a; border: 2px solid rgba(255,255,255,0.2); z-index: 3; position: relative; display: flex; items-center; justify-content: center; font-size: 10px; transition: 0.3s; }
+        .step-dot.active { border-color: var(--blast-orange); background: var(--blast-orange); color: black; box-shadow: 0 0 15px rgba(255,165,3,0.5); }
     </style>
 </head>
 <body class="pt-24 flex flex-col min-h-screen">
@@ -30,28 +36,33 @@
         </div>
     </nav>
 
-    <main class="flex-grow container mx-auto px-6 flex items-center justify-center">
-        <div class="w-full max-w-2xl">
-            <div id="login-box" class="glass p-8 md:p-12 rounded-[2rem] text-center shadow-2xl">
-                <div class="w-20 h-20 bg-orange-blast/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <i class="fas fa-user-check text-3xl text-orange-blast"></i>
-                </div>
+    <main class="flex-grow container mx-auto px-6 py-10">
+        <div class="max-w-3xl mx-auto">
+            
+            <div id="login-box" class="glass p-10 rounded-[2.5rem] text-center shadow-2xl animate-fade-in">
+                <i class="fas fa-fingerprint text-5xl text-orange-blast mb-6"></i>
                 <h2 class="text-3xl font-black uppercase mb-2 tracking-tighter">Rastreo de <span class="text-orange-blast">Pedido</span></h2>
-                <p class="text-gray-400 text-[10px] mb-10 uppercase tracking-widest">Ingresa tus credenciales para continuar</p>
-                
+                <p class="text-gray-400 text-[10px] mb-10 uppercase tracking-[0.2em]">Accede con tus datos de cliente</p>
                 <div class="space-y-4 max-w-sm mx-auto">
                     <input type="email" id="login-email" placeholder="Correo Electrónico" class="input-blast text-center">
                     <input type="text" id="login-cedula" placeholder="Cédula (Contraseña)" class="input-blast text-center">
-                    <button onclick="consultarPedidos()" class="w-full bg-orange-blast text-black font-black py-4 rounded-xl uppercase tracking-widest hover:brightness-110 transition shadow-lg shadow-orange-500/20 mt-4">Consultar</button>
+                    <button onclick="consultarPedidos()" class="w-full bg-orange-blast text-black font-black py-4 rounded-xl uppercase tracking-widest hover:brightness-110 transition mt-4">Consultar</button>
+                    <a href="tienda.html" class="inline-block mt-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest hover:text-white transition italic underline">Regresar a la Tienda</a>
                 </div>
             </div>
 
-            <div id="user-history" class="hidden space-y-8 animate-fade-in py-10">
-                <div class="flex justify-between items-center border-b border-white/10 pb-4">
-                    <h3 class="text-2xl font-black uppercase">Mis <span class="text-orange-blast">Ventas</span></h3>
-                    <button onclick="location.reload()" class="text-[10px] font-bold text-red-500 uppercase">Cerrar Sesión</button>
+            <div id="user-history" class="hidden space-y-8 animate-fade-in">
+                <div class="flex justify-between items-center bg-white/5 p-6 rounded-3xl">
+                    <div>
+                        <h3 class="text-2xl font-black uppercase tracking-tighter">Mis <span class="text-orange-blast">Compras</span></h3>
+                        <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Historial de Arsenal BlastVE</p>
+                    </div>
+                    <a href="tienda.html" class="bg-white/10 hover:bg-orange-blast hover:text-black px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition">Seguir Comprando</a>
                 </div>
-                <div id="pedidos-list" class="grid grid-cols-1 gap-6"></div>
+
+                <div id="pedidos-list" class="space-y-8"></div>
+                
+                <button onclick="location.reload()" class="w-full text-[10px] font-bold text-red-500/50 uppercase tracking-widest hover:text-red-500 transition py-10">Cerrar Sesión</button>
             </div>
         </div>
     </main>
@@ -62,9 +73,9 @@
         async function consultarPedidos() {
             const email = document.getElementById('login-email').value;
             const cedula = document.getElementById('login-cedula').value;
-            if(!email || !cedula) return Swal.fire({ text: 'Rellena ambos campos', icon: 'warning', background: '#0a0a0a', color: '#fff', confirmButtonColor: '#FFA503' });
+            if(!email || !cedula) return Swal.fire({ text: 'Rellena ambos campos', icon: 'warning', background: '#0a0a0a', color: '#fff' });
 
-            Swal.fire({ title: 'Buscando...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+            Swal.fire({ title: 'Sincronizando...', didOpen: () => { Swal.showLoading() }, background: '#0a0a0a', color: '#fff' });
 
             try {
                 const res = await fetch(`${API_URL}?action=getPedidos&email=${email}&cedula=${cedula}`);
@@ -75,22 +86,61 @@
 
                 document.getElementById('login-box').classList.add('hidden');
                 document.getElementById('user-history').classList.remove('hidden');
-                document.getElementById('pedidos-list').innerHTML = data.map(p => `
-                    <div class="glass p-6 rounded-3xl border-l-4 ${p.estatus === 'Pendiente' ? 'border-yellow-500' : 'border-green-500'}">
-                        <div class="flex justify-between items-start mb-4">
+                
+                document.getElementById('pedidos-list').innerHTML = data.map(p => {
+                    const statusVal = getStatusProgress(p.estatus);
+                    return `
+                    <div class="glass p-8 rounded-[2rem] border border-white/5">
+                        <div class="flex justify-between items-start mb-10">
                             <div>
-                                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Orden #${p.referencia}</p>
-                                <p class="text-xs text-white font-black">${p.fecha}</p>
+                                <p class="text-[10px] text-orange-blast font-black uppercase mb-1">Orden #${p.referencia}</p>
+                                <h4 class="text-xl font-black uppercase">${p.fecha}</h4>
                             </div>
-                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase ${p.estatus === 'Pendiente' ? 'bg-yellow-500/10 text-yellow-500' : 'bg-green-500/10 text-green-500'}">${p.estatus}</span>
+                            <a href="${p.comprobante}" target="_blank" class="bg-white/5 p-3 rounded-full hover:bg-orange-blast hover:text-black transition"><i class="fas fa-file-invoice-dollar"></i></a>
                         </div>
-                        <p class="text-[11px] text-gray-300 mb-6 italic">${p.items}</p>
-                        <div class="flex justify-between items-center pt-4 border-t border-white/5">
-                            <span class="text-2xl font-black text-orange-blast">$${parseFloat(p.total).toFixed(2)}</span>
-                            <a href="${p.comprobante}" target="_blank" class="bg-white/5 border border-white/10 px-4 py-2 rounded-lg text-[9px] font-bold uppercase hover:bg-white/10 transition">Ver Ticket</a>
+
+                        <div class="relative mb-12 px-2">
+                            <div class="step-line"></div>
+                            <div class="step-progress" style="width: ${statusVal.percent}%"></div>
+                            <div class="flex justify-between relative z-10">
+                                <div class="flex flex-col items-center">
+                                    <div class="step-dot ${statusVal.step >= 1 ? 'active' : ''}"><i class="fas fa-clock"></i></div>
+                                    <span class="text-[8px] mt-2 font-bold uppercase tracking-tighter">Recibido</span>
+                                </div>
+                                <div class="flex flex-col items-center">
+                                    <div class="step-dot ${statusVal.step >= 2 ? 'active' : ''}"><i class="fas fa-check-double"></i></div>
+                                    <span class="text-[8px] mt-2 font-bold uppercase tracking-tighter">Pagado</span>
+                                </div>
+                                <div class="flex flex-col items-center">
+                                    <div class="step-dot ${statusVal.step >= 3 ? 'active' : ''}"><i class="fas fa-truck-fast"></i></div>
+                                    <span class="text-[8px] mt-2 font-bold uppercase tracking-tighter">Enviado</span>
+                                </div>
+                                <div class="flex flex-col items-center">
+                                    <div class="step-dot ${statusVal.step >= 4 ? 'active' : ''}"><i class="fas fa-box-open"></i></div>
+                                    <span class="text-[8px] mt-2 font-bold uppercase tracking-tighter">Entregado</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>`).join('');
+
+                        <div class="bg-white/5 rounded-2xl p-6">
+                            <p class="text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-widest border-b border-white/5 pb-2">Productos Comprados:</p>
+                            <p class="text-lg font-bold text-gray-200 leading-tight uppercase tracking-tight">${p.items}</p>
+                            <div class="mt-6 flex justify-between items-end">
+                                <span class="text-3xl font-black text-orange-blast">$${parseFloat(p.total).toFixed(2)}</span>
+                                <span class="text-[10px] text-gray-500 italic font-medium uppercase">${p.estatus}</span>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
             } catch (e) { Swal.fire({ text: 'Error de servidor', icon: 'error' }); }
+        }
+
+        function getStatusProgress(status) {
+            const s = status.toLowerCase();
+            if (s.includes('entrega') || s.includes('finaliza')) return { step: 4, percent: 100 };
+            if (s.includes('envia')) return { step: 3, percent: 66 };
+            if (s.includes('paga') || s.includes('confirma')) return { step: 2, percent: 33 };
+            return { step: 1, percent: 0 };
         }
     </script>
 </body>
