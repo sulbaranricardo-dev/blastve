@@ -93,20 +93,8 @@
             <h3 class="text-2xl font-black uppercase tracking-widest">Productos <span class="text-orange-blast">Elite</span></h3>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            <div class="glass glass-card relative rounded-3xl overflow-hidden p-5 group transition-all duration-500 hover:border-orange-500/30">
-                <div class="aspect-square rounded-2xl overflow-hidden mb-6">
-                    <img src="https://via.placeholder.com/600x600/1a1a1a/ffffff?text=Blast+Product" alt="Item" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
-                </div>
-                <h4 class="text-lg font-bold mb-1 tracking-tight uppercase">Suplemento Pro / Gear</h4>
-                <p class="text-gray-500 text-[10px] mb-6 uppercase tracking-widest font-bold">Edición BlastVE</p>
-                <div class="flex justify-between items-center">
-                    <span class="text-2xl font-black text-white group-hover:text-orange-blast transition-colors">$29.99</span>
-                    <button class="bg-white/5 border border-white/10 hover:bg-orange-blast hover:text-black p-3 rounded-2xl transition-all">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                </div>
-            </div>
+        <div id="productos-destacados" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <p class="text-gray-500 animate-pulse">Cargando arsenal...</p>
         </div>
     </section>
 
@@ -115,6 +103,55 @@
              alt="BlastVE Icon" class="w-12 h-12 mx-auto mb-6 opacity-30">
         <p class="text-gray-600 text-[10px] font-bold tracking-[0.3em] uppercase">© 2026 BlastVE. Powering the athlete.</p>
     </footer>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbzosCdNdzT7nkWH6Ofemxk9yf1UnO3kbo6E9Unpdn7NIi3I2akLsx0eAaW1sgScvpugCQ/exec";
+
+        async function cargarProductosDestacados() {
+            try {
+                const response = await fetch(API_URL);
+                const productos = await response.json();
+                
+                const contenedor = document.getElementById('productos-destacados');
+                contenedor.innerHTML = ''; // Limpiar loader
+
+                // Filtrar solo los destacados y limitar a 6
+                const destacados = productos
+                    .filter(p => p.destacado.toUpperCase() === 'SÍ' || p.destacado.toUpperCase() === 'SI')
+                    .slice(0, 6);
+
+                destacados.forEach(p => {
+                    contenedor.innerHTML += `
+                        <div class="glass glass-card relative rounded-3xl overflow-hidden p-5 group transition-all duration-500 hover:border-orange-500/30">
+                            <div class="aspect-square rounded-2xl overflow-hidden mb-6">
+                                <img src="${p.imagen_url}" alt="${p.nombre}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                            </div>
+                            <h4 class="text-lg font-bold mb-1 tracking-tight uppercase">${p.nombre}</h4>
+                            <p class="text-gray-500 text-[10px] mb-6 uppercase tracking-widest font-bold">${p.categoria}</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-black text-white group-hover:text-orange-blast transition-colors">$${parseFloat(p.precio).toFixed(2)}</span>
+                                <button onclick="agregarAlCarrito('${p.id}')" class="bg-white/5 border border-white/10 hover:bg-orange-blast hover:text-black p-3 rounded-2xl transition-all">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                console.error("Error cargando productos:", error);
+                document.getElementById('productos-destacados').innerHTML = '<p class="text-red-500">Error al conectar con el inventario.</p>';
+            }
+        }
+
+        // Ejecutar al cargar la página
+        window.onload = cargarProductosDestacados;
+
+        // Función base para el carrito (la expandiremos luego)
+        function agregarAlCarrito(id) {
+            console.log("Producto agregado:", id);
+            alert("¡Producto añadido al carrito!");
+        }
+    </script>
 
 </body>
 </html>
