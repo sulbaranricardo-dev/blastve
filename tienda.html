@@ -13,9 +13,12 @@
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .text-orange-blast { color: var(--blast-orange); }
         .bg-orange-blast { background-color: var(--blast-orange); }
-        
-        /* Estilo para el botón de categoría activo */
         .filter-btn.active { background-color: var(--blast-orange); color: black; }
+        
+        /* Ocultar scrollbar pero mantener funcionalidad */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: var(--blast-orange); border-radius: 10px; }
     </style>
 </head>
 <body class="pt-24">
@@ -44,8 +47,8 @@
     </header>
 
     <section class="container mx-auto px-6 mb-12 flex flex-wrap justify-center gap-4" id="category-filters">
-        <button class="filter-btn active glass px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition" onclick="filterProducts('todos')">Todos</button>
-        </section>
+        <button class="filter-btn active glass px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition" onclick="filterProducts('todos', this)">Todos</button>
+    </section>
 
     <main class="container mx-auto px-6 pb-24">
         <div id="tienda-grid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
@@ -60,22 +63,72 @@
                 <h2 class="text-2xl font-black uppercase">Tu Carrito</h2>
                 <button onclick="toggleCart()" class="text-white text-2xl">&times;</button>
             </div>
-            <div id="cart-items" class="space-y-6">
-                </div>
+            <div id="cart-items" class="space-y-6"></div>
             <div class="mt-8 border-t border-white/10 pt-6">
                 <div class="flex justify-between text-xl font-black mb-6">
                     <span>TOTAL:</span>
                     <span class="text-orange-blast" id="cart-total">$0.00</span>
                 </div>
-                <button class="w-full bg-orange-blast text-black py-4 rounded-xl font-black uppercase tracking-widest hover:scale-105 transition">
+                <button onclick="togglePaymentModal()" class="w-full bg-orange-blast text-black py-4 rounded-xl font-black uppercase tracking-widest hover:scale-105 transition">
                     Confirmar Pedido
                 </button>
             </div>
         </div>
     </div>
 
+    <div id="payment-modal" class="fixed inset-0 z-[70] hidden">
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-md"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="glass w-full max-w-lg rounded-3xl p-8 max-h-[90vh] overflow-y-auto relative">
+                <button onclick="togglePaymentModal()" class="absolute top-6 right-6 text-gray-400 hover:text-white text-2xl">&times;</button>
+                <h2 class="text-3xl font-black uppercase mb-2 text-center">Finalizar <span class="text-orange-blast">Pedido</span></h2>
+                <p class="text-gray-400 text-[10px] mb-8 text-center uppercase tracking-widest font-bold">Confirma tu transferencia o pago móvil</p>
+
+                <form id="payment-form" onsubmit="enviarPedido(event)" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="cliente-nombre" placeholder="Nombre Completo" required class="bg-white/5 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:border-orange-blast transition">
+                        <input type="tel" id="cliente-whatsapp" placeholder="WhatsApp" required class="bg-white/5 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:border-orange-blast transition">
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-orange-blast">Método de Pago</label>
+                        <select id="metodo-pago" onchange="mostrarInstrucciones()" class="w-full bg-black border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:border-orange-blast text-white">
+                            <option value="pago-movil">Pago Móvil</option>
+                            <option value="zelle">Zelle</option>
+                            <option value="binance">Binance (USDT)</option>
+                            <option value="paypal">PayPal</option>
+                        </select>
+                    </div>
+
+                    <div id="instrucciones-pago" class="bg-orange-blast/10 border border-orange-blast/20 p-4 rounded-2xl text-xs leading-relaxed text-gray-200 text-center font-medium"></div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="pago-referencia" placeholder="Nro de Referencia" required class="bg-white/5 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:border-orange-blast transition">
+                        <input type="number" id="pago-monto" step="0.01" placeholder="Monto Pagado $" required class="bg-white/5 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:border-orange-blast transition">
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Comprobante de Pago</label>
+                        <input type="file" id="pago-comprobante" accept="image/*" required class="block w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-orange-blast file:text-black hover:file:bg-white cursor-pointer transition">
+                    </div>
+
+                    <button type="submit" id="btn-enviar" class="w-full bg-orange-blast text-black py-4 rounded-xl font-black uppercase tracking-widest hover:scale-105 transition shadow-lg shadow-orange-500/20">
+                        Confirmar Pago Ahora
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbzosCdNdzT7nkWH6Ofemxk9yf1UnO3kbo6E9Unpdn7NIi3I2akLsx0eAaW1sgScvpugCQ/exec";
+        const DATOS_PAGO = {
+            'pago-movil': "BANCO: Banesco | RIF: J-12345678 | TEL: 0412-0000000",
+            'zelle': "CORREO: pagos@blastve.com | Titular: BlastVE Corp",
+            'binance': "ID: 987654321 | Red: BEP20",
+            'paypal': "CORREO: paypal@blastve.com (Sumar comisión 5.4%)"
+        };
+
         let allProducts = [];
         let cart = JSON.parse(localStorage.getItem('blastCart')) || [];
 
@@ -109,7 +162,7 @@
                     </div>
                     <h4 class="font-bold text-sm uppercase mb-1">${p.nombre}</h4>
                     <p class="text-orange-blast font-black text-lg mb-4">$${parseFloat(p.precio).toFixed(2)}</p>
-                    <button onclick="addToCart('${p.id}')" class="w-full bg-white/5 border border-white/10 hover:bg-orange-blast hover:text-black py-2 rounded-xl transition font-bold text-xs uppercase">
+                    <button onclick="addToCart('${p.id}')" class="w-full bg-white/5 border border-white/10 hover:bg-orange-blast hover:text-black py-2 rounded-xl transition font-bold text-[10px] uppercase">
                         Agregar
                     </button>
                 </div>
@@ -117,23 +170,16 @@
         }
 
         function filterProducts(cat, btn) {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('bg-orange-blast', 'text-black'));
-            if(btn) btn.classList.add('bg-orange-blast', 'text-black');
-            
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            if(btn) btn.classList.add('active');
             const filtered = cat === 'todos' ? allProducts : allProducts.filter(p => p.categoria.toLowerCase() === cat);
             renderProducts(filtered);
         }
 
-        // LÓGICA DEL CARRITO
         function addToCart(id) {
             const product = allProducts.find(p => p.id == id);
             const inCart = cart.find(item => item.id == id);
-            
-            if (inCart) {
-                inCart.quantity++;
-            } else {
-                cart.push({...product, quantity: 1});
-            }
+            if (inCart) { inCart.quantity++; } else { cart.push({...product, quantity: 1}); }
             saveCart();
         }
 
@@ -145,20 +191,18 @@
         function updateCartUI() {
             const count = cart.reduce((acc, item) => acc + item.quantity, 0);
             document.getElementById('cart-count').innerText = count;
-            
             const cartItems = document.getElementById('cart-items');
             const totalEl = document.getElementById('cart-total');
-            
             let total = 0;
             cartItems.innerHTML = cart.map(item => {
                 total += item.precio * item.quantity;
                 return `
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between glass p-3 rounded-xl">
                         <div>
-                            <p class="font-bold text-sm uppercase">${item.nombre}</p>
-                            <p class="text-xs text-gray-500">${item.quantity} x $${item.precio}</p>
+                            <p class="font-bold text-xs uppercase">${item.nombre}</p>
+                            <p class="text-[10px] text-orange-blast font-bold">${item.quantity} x $${item.precio}</p>
                         </div>
-                        <button onclick="removeFromCart('${item.id}')" class="text-red-500 text-xs">Quitar</button>
+                        <button onclick="removeFromCart('${item.id}')" class="text-red-500 text-lg"><i class="fas fa-trash-alt"></i></button>
                     </div>
                 `;
             }).join('');
@@ -170,9 +214,63 @@
             saveCart();
         }
 
-        function toggleCart() {
-            document.getElementById('cart-modal').classList.toggle('hidden');
+        function toggleCart() { document.getElementById('cart-modal').classList.toggle('hidden'); }
+
+        function togglePaymentModal() {
+            if(cart.length === 0) return alert("Tu carrito está vacío");
+            document.getElementById('cart-modal').classList.add('hidden');
+            document.getElementById('payment-modal').classList.toggle('hidden');
+            mostrarInstrucciones();
         }
+
+        function mostrarInstrucciones() {
+            const metodo = document.getElementById('metodo-pago').value;
+            document.getElementById('instrucciones-pago').innerText = DATOS_PAGO[metodo];
+        }
+
+        async function enviarPedido(event) {
+            event.preventDefault();
+            const btn = document.getElementById('btn-enviar');
+            btn.innerText = "PROCESANDO...";
+            btn.disabled = true;
+
+            const fileInput = document.getElementById('pago-comprobante');
+            const file = fileInput.files[0];
+            const base64 = await toBase64(file);
+
+            const pedido = {
+                nombre: document.getElementById('cliente-nombre').value,
+                whatsapp: document.getElementById('cliente-whatsapp').value,
+                metodo: document.getElementById('metodo-pago').value,
+                referencia: document.getElementById('pago-referencia').value,
+                monto: document.getElementById('pago-monto').value,
+                imagen: base64,
+                items: cart.map(item => `${item.nombre} (x${item.quantity})`).join(', '),
+                total: cart.reduce((acc, item) => acc + (item.precio * item.quantity), 0)
+            };
+
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify(pedido)
+                });
+                alert("¡PEDIDO ENVIADO! Verificaremos tu pago pronto.");
+                localStorage.removeItem('blastCart');
+                location.reload();
+            } catch (error) {
+                alert("Error al enviar. Intenta de nuevo.");
+                btn.disabled = false;
+                btn.innerText = "Confirmar Pago Ahora";
+            }
+        }
+
+        const toBase64 = file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
 
         window.onload = cargarTienda;
     </script>
