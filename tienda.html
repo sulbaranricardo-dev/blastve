@@ -164,12 +164,31 @@
         let cart = JSON.parse(localStorage.getItem('blastCart')) || [];
 
         async function cargarTienda() {
-            try {
-                const response = await fetch(API_URL);
-                allProducts = await response.json();
-                renderFilters(); renderProducts(allProducts); updateCartUI();
-            } catch (e) { console.error(e); }
+    // 1. Intentar cargar desde la memoria local primero (Instantáneo)
+    const cachedProducts = localStorage.getItem('blastProductsCache');
+    if (cachedProducts) {
+        allProducts = JSON.parse(cachedProducts);
+        renderFilters();
+        renderProducts(allProducts);
+        updateCartUI();
+    }
+
+    // 2. Luego hacer la petición a la API para actualizar (En segundo plano)
+    try {
+        const response = await fetch(API_URL);
+        const freshProducts = await response.json();
+        
+        // Si hay cambios, actualizamos la vista y la memoria
+        if (JSON.stringify(freshProducts) !== cachedProducts) {
+            allProducts = freshProducts;
+            localStorage.setItem('blastProductsCache', JSON.stringify(freshProducts));
+            renderFilters();
+            renderProducts(allProducts);
         }
+    } catch (e) {
+        console.error("Error actualizando inventario:", e);
+    }
+}
 
         function renderFilters() {
             const categories = ['todos', ...new Set(allProducts.map(p => p.categoria.toLowerCase()))];
