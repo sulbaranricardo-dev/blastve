@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Pedido | BlastVE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root { --blast-orange: #FFA503; }
+        body { background-color: #0a0a0a; color: white; font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .text-orange-blast { color: var(--blast-orange); }
+        .bg-orange-blast { background-color: var(--blast-orange); }
+        .input-blast { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.75rem; padding: 0.75rem; font-size: 0.875rem; color: white; transition: all 0.3s; }
+        .input-blast:focus { outline: none; border-color: var(--blast-orange); }
+    </style>
+</head>
+<body class="pt-24 flex flex-col min-h-screen">
+
+    <nav class="fixed top-4 left-1/2 -translate-x-1/2 w-[92%] md:w-[85%] glass rounded-2xl z-50 px-6 py-3">
+        <div class="flex justify-between items-center">
+            <a href="index.html"><img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/Blast%2FCalaveraBlanca(2).png?alt=media&token=89f5df51-fd80-4c68-8e2b-0dabb088a1a5" alt="Logo" class="w-10 h-10 object-contain"></a>
+            <div class="space-x-8 font-bold uppercase text-[10px] tracking-[0.2em]">
+                <a href="index.html" class="hover:text-orange-blast transition">Inicio</a>
+                <a href="tienda.html" class="hover:text-orange-blast transition">Tienda</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow container mx-auto px-6 flex items-center justify-center">
+        <div class="w-full max-w-2xl">
+            <div id="login-box" class="glass p-8 md:p-12 rounded-[2rem] text-center shadow-2xl">
+                <div class="w-20 h-20 bg-orange-blast/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-user-check text-3xl text-orange-blast"></i>
+                </div>
+                <h2 class="text-3xl font-black uppercase mb-2 tracking-tighter">Rastreo de <span class="text-orange-blast">Pedido</span></h2>
+                <p class="text-gray-400 text-[10px] mb-10 uppercase tracking-widest">Ingresa tus credenciales para continuar</p>
+                
+                <div class="space-y-4 max-w-sm mx-auto">
+                    <input type="email" id="login-email" placeholder="Correo Electrónico" class="input-blast text-center">
+                    <input type="text" id="login-cedula" placeholder="Cédula (Contraseña)" class="input-blast text-center">
+                    <button onclick="consultarPedidos()" class="w-full bg-orange-blast text-black font-black py-4 rounded-xl uppercase tracking-widest hover:brightness-110 transition shadow-lg shadow-orange-500/20 mt-4">Consultar</button>
+                </div>
+            </div>
+
+            <div id="user-history" class="hidden space-y-8 animate-fade-in py-10">
+                <div class="flex justify-between items-center border-b border-white/10 pb-4">
+                    <h3 class="text-2xl font-black uppercase">Mis <span class="text-orange-blast">Ventas</span></h3>
+                    <button onclick="location.reload()" class="text-[10px] font-bold text-red-500 uppercase">Cerrar Sesión</button>
+                </div>
+                <div id="pedidos-list" class="grid grid-cols-1 gap-6"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbzosCdNdzT7nkWH6Ofemxk9yf1UnO3kbo6E9Unpdn7NIi3I2akLsx0eAaW1sgScvpugCQ/exec";
+
+        async function consultarPedidos() {
+            const email = document.getElementById('login-email').value;
+            const cedula = document.getElementById('login-cedula').value;
+            if(!email || !cedula) return Swal.fire({ text: 'Rellena ambos campos', icon: 'warning', background: '#0a0a0a', color: '#fff', confirmButtonColor: '#FFA503' });
+
+            Swal.fire({ title: 'Buscando...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+
+            try {
+                const res = await fetch(`${API_URL}?action=getPedidos&email=${email}&cedula=${cedula}`);
+                const data = await res.json();
+                Swal.close();
+
+                if(data.length === 0) return Swal.fire({ text: 'No tienes pedidos registrados', icon: 'info', background: '#0a0a0a', color: '#fff' });
+
+                document.getElementById('login-box').classList.add('hidden');
+                document.getElementById('user-history').classList.remove('hidden');
+                document.getElementById('pedidos-list').innerHTML = data.map(p => `
+                    <div class="glass p-6 rounded-3xl border-l-4 ${p.estatus === 'Pendiente' ? 'border-yellow-500' : 'border-green-500'}">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Orden #${p.referencia}</p>
+                                <p class="text-xs text-white font-black">${p.fecha}</p>
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase ${p.estatus === 'Pendiente' ? 'bg-yellow-500/10 text-yellow-500' : 'bg-green-500/10 text-green-500'}">${p.estatus}</span>
+                        </div>
+                        <p class="text-[11px] text-gray-300 mb-6 italic">${p.items}</p>
+                        <div class="flex justify-between items-center pt-4 border-t border-white/5">
+                            <span class="text-2xl font-black text-orange-blast">$${parseFloat(p.total).toFixed(2)}</span>
+                            <a href="${p.comprobante}" target="_blank" class="bg-white/5 border border-white/10 px-4 py-2 rounded-lg text-[9px] font-bold uppercase hover:bg-white/10 transition">Ver Ticket</a>
+                        </div>
+                    </div>`).join('');
+            } catch (e) { Swal.fire({ text: 'Error de servidor', icon: 'error' }); }
+        }
+    </script>
+</body>
+</html>
