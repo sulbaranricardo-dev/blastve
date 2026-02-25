@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Producto | BlastVE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root { --blast-orange: #FFA503; }
+        body { background-color: #0a0a0a; color: white; font-family: 'Montserrat', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .text-orange-blast { color: var(--blast-orange); }
+        .bg-orange-blast { background-color: var(--blast-orange); }
+    </style>
+</head>
+<body class="pt-24">
+
+    <nav class="fixed top-4 left-1/2 -translate-x-1/2 w-[92%] md:w-[85%] glass rounded-2xl z-50 px-6 py-3 flex justify-between items-center">
+        <a href="index.html"><img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/Blast%2FCalaveraBlanca(2).png?alt=media&token=89f5df51-fd80-4c68-8e2b-0dabb088a1a5" alt="Logo" class="w-10 h-10 object-contain"></a>
+        <div class="space-x-8 font-bold uppercase text-[10px] tracking-[0.2em]">
+            <a href="index.html" class="hover:text-orange-blast transition text-white">Inicio</a>
+            <a href="tienda.html" class="hover:text-orange-blast transition text-white">Tienda</a>
+            <a href="mi-pedido.html" class="hover:text-orange-blast transition text-white"><i class="fas fa-user-circle text-lg"></i></a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-6 py-10">
+        <div id="product-content" class="flex flex-col md:flex-row gap-12 items-center md:items-start">
+            <p class="animate-pulse text-gray-500 uppercase font-black">Preparando Equipo...</p>
+        </div>
+    </main>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbzosCdNdzT7nkWH6Ofemxk9yf1UnO3kbo6E9Unpdn7NIi3I2akLsx0eAaW1sgScvpugCQ/exec";
+        
+        // Obtener el ID de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+
+        async function cargarProducto() {
+            try {
+                const res = await fetch(API_URL);
+                const productos = await res.json();
+                const p = productos.find(item => item.id == productId);
+
+                if(!p) {
+                    document.getElementById('product-content').innerHTML = "<h2>Producto no encontrado</h2>";
+                    return;
+                }
+
+                document.title = `${p.nombre} | BlastVE`;
+
+                document.getElementById('product-content').innerHTML = `
+                    <div class="w-full md:w-1/2">
+                        <div class="glass p-4 rounded-[3rem] border border-white/10 shadow-2xl">
+                            <img src="${p.imagen_url}" class="w-full rounded-[2.5rem] object-cover shadow-2xl">
+                        </div>
+                    </div>
+
+                    <div class="w-full md:w-1/2 space-y-8">
+                        <div>
+                            <span class="text-orange-blast font-black uppercase tracking-[0.3em] text-[10px]">${p.categoria}</span>
+                            <h1 class="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none mt-2">${p.nombre}</h1>
+                        </div>
+
+                        <p class="text-3xl font-black text-white italic">$${parseFloat(p.precio).toFixed(2)}</p>
+
+                        <div class="bg-white/[0.03] p-6 rounded-3xl border border-white/5">
+                            <p class="text-gray-400 text-sm leading-relaxed">${p.descripcion || 'Sin descripción disponible por ahora. Equipamiento de alto rendimiento diseñado para atletas de élite.'}</p>
+                        </div>
+
+                        <div class="flex gap-4 pt-4">
+                            <button onclick="agregarYComprar('${p.id}')" class="flex-grow bg-orange-blast text-black font-black py-5 rounded-2xl uppercase tracking-widest hover:scale-105 transition shadow-lg shadow-orange-500/20">
+                                Agregar al Carrito
+                            </button>
+                        </div>
+                        
+                        <div class="pt-6 border-t border-white/5 flex items-center gap-4 text-gray-500">
+                             <i class="fas fa-truck-fast text-orange-blast"></i>
+                             <p class="text-[10px] font-bold uppercase tracking-widest text-green-500">Envíos a nivel nacional por MRW</p>
+                        </div>
+                    </div>
+                `;
+            } catch (e) { console.error(e); }
+        }
+
+        function agregarYComprar(id) {
+            // Reutilizamos la lógica del carrito
+            let cart = JSON.parse(localStorage.getItem('blastCart')) || [];
+            // Necesitamos los datos del producto que ya cargamos
+            fetch(API_URL).then(res => res.json()).then(productos => {
+                const p = productos.find(item => item.id == id);
+                const inCart = cart.find(i => i.id == id);
+                if (inCart) inCart.quantity++; else cart.push({...p, quantity: 1});
+                localStorage.setItem('blastCart', JSON.stringify(cart));
+                
+                Swal.fire({
+                    title: '¡Añadido!',
+                    text: 'El producto está en tu carrito.',
+                    icon: 'success',
+                    background: '#0a0a0a',
+                    color: '#fff',
+                    confirmButtonColor: '#FFA503',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ver Carrito',
+                    cancelButtonText: 'Seguir comprando'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "tienda.html";
+                    }
+                });
+            });
+        }
+
+        window.onload = cargarProducto;
+    </script>
+</body>
+</html>
