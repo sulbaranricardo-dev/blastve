@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlastVE | Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blast-orange: #FFA503;
+        }
+        body {
+            background-color: #0a0a0a;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+        }
+        /* Efecto Cristal Esmerilado */
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        /* Fondo de Gym con Overlay Corregido */
+        .hero-gym {
+            position: relative;
+            background: linear-gradient(rgba(10, 10, 10, 0.7), rgba(10, 10, 10, 0.9)), 
+                        url('https://images.unsplash.com/photo-1540497077202-7c8a3999166f?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .glass-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 165, 3, 0.15), transparent);
+            transition: 0.6s;
+        }
+        .glass-card:hover::before {
+            left: 100%;
+        }
+        .text-orange-blast { color: var(--blast-orange); }
+        .bg-orange-blast { background-color: var(--blast-orange); }
+    </style>
+</head>
+<body>
+
+    <nav class="fixed top-4 left-1/2 -translate-x-1/2 w-[92%] md:w-[85%] glass rounded-2xl z-50 px-6 py-3">
+        <div class="flex justify-between items-center">
+            <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/Blast%2FCalaveraBlanca(2).png?alt=media&token=89f5df51-fd80-4c68-8e2b-0dabb088a1a5" 
+                 alt="Isotipo BlastVE" class="w-10 h-10 object-contain">
+            
+            <div class="space-x-8 hidden md:flex font-bold uppercase text-[10px] tracking-[0.2em]">
+                <a href="#" class="hover:text-orange-blast transition">Inicio</a>
+                <a href="tienda.html" class="hover:text-orange-blast transition">Tienda</a>
+                <a href="#contacto" class="hover:text-orange-blast transition">Contacto</a>
+            </div>
+
+            <div class="relative cursor-pointer group">
+                <i class="fas fa-shopping-bag text-xl group-hover:text-orange-blast transition"></i>
+                <span id="cart-count" class="absolute -top-2 -right-2 bg-orange-blast text-black text-[9px] font-black rounded-full h-4 w-4 flex items-center justify-center">0</span>
+            </div>
+        </div>
+    </nav>
+
+    <section class="min-h-screen flex items-center justify-center relative hero-gym">
+        <div class="relative text-center z-10 px-6">
+            <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/Blast%2FBlastOnlyWhite(2).png?alt=media&token=7b7779d2-eb0b-43d9-882a-97899aa7ae49" 
+                 alt="BlastVE Logo" class="mx-auto w-72 md:w-[450px] mb-6 drop-shadow-[0_10px_35px_rgba(255,165,3,0.4)] transition-transform hover:scale-105 duration-700">
+            
+            <h1 class="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-4 leading-none">
+                DOMINA TU <span class="text-orange-blast">POTENCIAL</span>
+            </h1>
+            <p class="text-gray-300 max-w-xl mx-auto mb-10 text-xs md:text-sm font-light tracking-[0.1em] uppercase">
+                Equipamiento de élite para atletas de alto rendimiento.
+            </p>
+            
+            <a href="tienda.html" class="bg-orange-blast text-black px-12 py-4 rounded-full font-black uppercase tracking-widest hover:scale-110 transition-all shadow-[0_15px_30px_rgba(255,165,3,0.3)] inline-block">
+                Explorar Tienda
+            </a>
+        </div>
+    </section>
+
+    <section class="container mx-auto py-24 px-6 bg-[#0a0a0a]">
+        <div class="flex items-center space-x-4 mb-16">
+            <div class="w-12 h-[2px] bg-orange-blast"></div>
+            <h3 class="text-2xl font-black uppercase tracking-widest">Productos <span class="text-orange-blast">Elite</span></h3>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div class="glass glass-card relative rounded-3xl overflow-hidden p-5 group transition-all duration-500 hover:border-orange-500/30">
+                <div class="aspect-square rounded-2xl overflow-hidden mb-6">
+                    <img src="https://via.placeholder.com/600x600/1a1a1a/ffffff?text=Blast+Product" alt="Item" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                </div>
+                <h4 class="text-lg font-bold mb-1 tracking-tight uppercase">Suplemento Pro / Gear</h4>
+                <p class="text-gray-500 text-[10px] mb-6 uppercase tracking-widest font-bold">Edición BlastVE</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-2xl font-black text-white group-hover:text-orange-blast transition-colors">$29.99</span>
+                    <button class="bg-white/5 border border-white/10 hover:bg-orange-blast hover:text-black p-3 rounded-2xl transition-all">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contacto" class="bg-black py-16 px-6 text-center border-t border-white/5">
+        <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/Blast%2FCalaveraBlanca(2).png?alt=media&token=89f5df51-fd80-4c68-8e2b-0dabb088a1a5" 
+             alt="BlastVE Icon" class="w-12 h-12 mx-auto mb-6 opacity-30">
+        <p class="text-gray-600 text-[10px] font-bold tracking-[0.3em] uppercase">© 2026 BlastVE. Powering the athlete.</p>
+    </footer>
+
+</body>
+</html>
