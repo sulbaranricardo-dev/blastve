@@ -52,32 +52,32 @@
 <body>
 
     <nav class="fixed top-4 left-1/2 -translate-x-1/2 w-[92%] md:w-[85%] glass rounded-2xl z-50 px-6 py-3">
-    <div class="flex justify-between items-center">
-        <a href="index.html">
-            <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/Blast%2FCalaveraBlanca(2).png?alt=media&token=89f5df51-fd80-4c68-8e2b-0dabb088a1a5" 
-                 alt="Isotipo BlastVE" class="w-10 h-10 object-contain">
-        </a>
-        
-        <div class="space-x-8 hidden md:flex font-bold uppercase text-[10px] tracking-[0.2em]">
-            <a href="index.html" class="text-orange-blast">Inicio</a>
-            <a href="tienda.html" class="hover:text-orange-blast transition">Tienda</a>
-            <a href="#contacto" class="hover:text-orange-blast transition">Contacto</a>
-        </div>
-
-        <div class="flex items-center space-x-5">
-            <a href="mi-pedido.html" class="hover:text-orange-blast transition">
-                <i class="fas fa-user-circle text-xl"></i>
+        <div class="flex justify-between items-center">
+            <a href="index.html">
+                <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/Blast%2FCalaveraBlanca(2).png?alt=media&token=89f5df51-fd80-4c68-8e2b-0dabb088a1a5" 
+                     alt="Isotipo BlastVE" class="w-10 h-10 object-contain">
             </a>
             
-            <div class="relative cursor-pointer group">
-                <a href="tienda.html">
-                    <i class="fas fa-shopping-bag text-xl group-hover:text-orange-blast transition"></i>
-                    <span id="cart-count" class="absolute -top-2 -right-2 bg-orange-blast text-black text-[9px] font-black rounded-full h-4 w-4 flex items-center justify-center">0</span>
+            <div class="space-x-8 hidden md:flex font-bold uppercase text-[10px] tracking-[0.2em]">
+                <a href="index.html" class="text-orange-blast">Inicio</a>
+                <a href="tienda.html" class="hover:text-orange-blast transition">Tienda</a>
+                <a href="#contacto" class="hover:text-orange-blast transition">Contacto</a>
+            </div>
+
+            <div class="flex items-center space-x-5">
+                <a href="mi-pedido.html" class="hover:text-orange-blast transition text-white">
+                    <i class="fas fa-user-circle text-xl"></i>
                 </a>
+                
+                <div class="relative cursor-pointer group">
+                    <a href="tienda.html">
+                        <i class="fas fa-shopping-bag text-xl group-hover:text-orange-blast transition"></i>
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-orange-blast text-black text-[9px] font-black rounded-full h-4 w-4 flex items-center justify-center">0</span>
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
     <section class="min-h-screen flex items-center justify-center relative hero-gym">
         <div class="relative text-center z-10 px-6">
@@ -137,10 +137,12 @@
                 destacados.forEach(p => {
                     contenedor.innerHTML += `
                         <div class="glass glass-card relative rounded-3xl overflow-hidden p-5 group transition-all duration-500 hover:border-orange-500/30">
-                            <div class="aspect-square rounded-2xl overflow-hidden mb-6">
+                            <a href="producto.html?id=${p.id}" class="block aspect-square rounded-2xl overflow-hidden mb-6">
                                 <img src="${p.imagen_url}" alt="${p.nombre}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
-                            </div>
-                            <h4 class="text-lg font-bold mb-1 tracking-tight uppercase">${p.nombre}</h4>
+                            </a>
+                            <a href="producto.html?id=${p.id}">
+                                <h4 class="text-lg font-bold mb-1 tracking-tight uppercase hover:text-orange-blast transition">${p.nombre}</h4>
+                            </a>
                             <p class="text-gray-500 text-[10px] mb-6 uppercase tracking-widest font-bold">${p.categoria}</p>
                             <div class="flex justify-between items-center">
                                 <span class="text-2xl font-black text-white group-hover:text-orange-blast transition-colors">$${parseFloat(p.precio).toFixed(2)}</span>
