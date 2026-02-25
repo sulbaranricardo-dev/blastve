@@ -33,29 +33,29 @@
 <body class="pt-24">
 
     <nav class="fixed top-4 left-1/2 -translate-x-1/2 w-[92%] md:w-[85%] glass rounded-2xl z-50 px-6 py-3">
-    <div class="flex justify-between items-center">
-        <a href="index.html">
-            <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/Blast%2FCalaveraBlanca(2).png?alt=media&token=89f5df51-fd80-4c68-8e2b-0dabb088a1a5" 
-                 alt="Isotipo" class="w-10 h-10 object-contain">
-        </a>
-        <div class="space-x-8 hidden md:flex font-bold uppercase text-[10px] tracking-[0.2em]">
-            <a href="index.html" class="hover:text-orange-blast transition">Inicio</a>
-            <a href="#" class="text-orange-blast">Tienda</a>
-            <a href="#contacto" class="hover:text-orange-blast transition">Contacto</a>
-        </div>
-        
-        <div class="flex items-center space-x-5">
-            <a href="mi-pedido.html" class="hover:text-orange-blast transition text-white">
-                <i class="fas fa-user-circle text-xl"></i>
+        <div class="flex justify-between items-center">
+            <a href="index.html">
+                <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/Blast%2FCalaveraBlanca(2).png?alt=media&token=89f5df51-fd80-4c68-8e2b-0dabb088a1a5" 
+                     alt="Isotipo" class="w-10 h-10 object-contain">
             </a>
+            <div class="space-x-8 hidden md:flex font-bold uppercase text-[10px] tracking-[0.2em]">
+                <a href="index.html" class="hover:text-orange-blast transition">Inicio</a>
+                <a href="#" class="text-orange-blast">Tienda</a>
+                <a href="mi-pedido.html" class="hover:text-orange-blast transition">Mis Pedidos</a>
+            </div>
+            
+            <div class="flex items-center space-x-5">
+                <a href="mi-pedido.html" class="hover:text-orange-blast transition text-white">
+                    <i class="fas fa-user-circle text-xl"></i>
+                </a>
 
-            <div class="relative cursor-pointer" onclick="toggleCart()">
-                <i class="fas fa-shopping-bag text-xl"></i>
-                <span id="cart-count" class="absolute -top-2 -right-2 bg-orange-blast text-black text-[9px] font-black rounded-full h-4 w-4 flex items-center justify-center">0</span>
+                <div class="relative cursor-pointer" onclick="toggleCart()">
+                    <i class="fas fa-shopping-bag text-xl"></i>
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-orange-blast text-black text-[9px] font-black rounded-full h-4 w-4 flex items-center justify-center">0</span>
+                </div>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
     <header class="container mx-auto px-6 py-12 text-center">
         <h1 class="text-5xl font-black uppercase tracking-tighter mb-4">Catálogo <span class="text-orange-blast">Completo</span></h1>
@@ -181,8 +181,12 @@
         function renderProducts(products) {
             document.getElementById('tienda-grid').innerHTML = products.map(p => `
                 <div class="glass relative rounded-3xl overflow-hidden p-4 group border border-white/5 hover:border-orange-500/30 transition-all duration-500">
-                    <div class="aspect-square rounded-2xl overflow-hidden mb-4"><img src="${p.imagen_url}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700"></div>
-                    <h4 class="font-bold text-[11px] uppercase mb-1 tracking-tight">${p.nombre}</h4>
+                    <a href="producto.html?id=${p.id}" class="block aspect-square rounded-2xl overflow-hidden mb-4">
+                        <img src="${p.imagen_url}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                    </a>
+                    <a href="producto.html?id=${p.id}">
+                        <h4 class="font-bold text-[11px] uppercase mb-1 tracking-tight hover:text-orange-blast transition">${p.nombre}</h4>
+                    </a>
                     <p class="text-orange-blast font-black text-lg mb-4">$${parseFloat(p.precio).toFixed(2)}</p>
                     <button onclick="addToCart('${p.id}')" class="w-full bg-white/5 border border-white/10 hover:bg-orange-blast hover:text-black py-3 rounded-xl transition font-black text-[10px] uppercase tracking-widest">Agregar</button>
                 </div>`).join('');
